@@ -5,11 +5,11 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_ignore_empty=True, extra='ignore')
 
     # Database
-    # DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5432/todoapp"
-    DATABASE_URL: str = "postgresql://neondb_owner:npg_Zjb2M9kBdJKP@ep-misty-moon-a11gvptq-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+    DATABASE_URL: str
+    NEON_DATABASE_URL: str | None = None
 
     # Authentication
-    BETTER_AUTH_SECRET: str = "CSct0S3JwOI6NIZPVSSsXp6nS89VFIsY"
+    BETTER_AUTH_SECRET: str
     BETTER_AUTH_URL: str = "http://localhost:3000"
 
     # Backend
@@ -19,6 +19,11 @@ class Settings(BaseSettings):
     # JWT
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
+
+    @property
+    def get_database_url(self) -> str:
+        """Get the appropriate database URL"""
+        return self.NEON_DATABASE_URL if self.NEON_DATABASE_URL else self.DATABASE_URL
 
 
 settings = Settings()

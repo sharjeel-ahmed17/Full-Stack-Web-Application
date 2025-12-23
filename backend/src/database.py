@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.pool import QueuePool
-from sqlmodel import Session
+from sqlmodel import Session, SQLModel
 from contextlib import contextmanager
 
 from .config import settings
