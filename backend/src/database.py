@@ -7,12 +7,14 @@ from .config import settings
 
 
 # Create the database engine
+# Uses DATABASE_URL from environment variables (loaded via settings)
+# Connection pooling is configured for production use
 engine = create_engine(
-    settings.DATABASE_URL,
+    settings.get_database_url,  # Loads from NEON_DATABASE_URL or DATABASE_URL
     poolclass=QueuePool,
     pool_size=5,
-    pool_pre_ping=True,
-    pool_recycle=300,
+    pool_pre_ping=True,  # Verify connections before using them
+    pool_recycle=300,  # Recycle connections after 5 minutes
     echo=False,  # Set to True for SQL query logging during development
 )
 

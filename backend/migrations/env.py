@@ -2,14 +2,26 @@ from logging.config import fileConfig
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from alembic import context
+import os
+import sys
+from pathlib import Path
 
-# Import your models here
+# Add the src directory to the path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
+
+# Import your models and settings
 from src.models.user import User
 from src.models.task import Task
 from src.database import SQLModel
+from src.config import settings
 
 # this is the Alembic Config object
 config = context.config
+
+# Override sqlalchemy.url with the one from settings (loaded from .env)
+# This ensures migrations use the same database as the application
+if not config.get_main_option("sqlalchemy.url"):
+    config.set_main_option("sqlalchemy.url", settings.get_database_url)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

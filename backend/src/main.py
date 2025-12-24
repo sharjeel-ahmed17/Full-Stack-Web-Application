@@ -37,15 +37,14 @@ app = FastAPI(
 )
 
 # Add CORS middleware
-if settings.BACKEND_CORS_ORIGINS:
+cors_origins = settings.get_cors_origins
+if cors_origins:
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=[origin.strip() for origin in settings.BACKEND_CORS_ORIGINS.split(",")],
-        # allow_credentials=True,
+        allow_origins=cors_origins,
         allow_methods=["*"],
         allow_headers=["*"],
-        # Allow credentials for JWT in cookies
-        allow_credentials=True,
+        allow_credentials=True,  # Allow credentials for JWT in cookies
     )
 
 # Include API router
