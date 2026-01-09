@@ -1,0 +1,220 @@
+openapi: 3.1.0
+info:
+  title: AI Chatbot Chat API
+  version: 1.0.0
+  description: |
+    Chat API endpoint for AI-powered todo management chatbot (Phase 3).
+
+    Allows authenticated users to send natural language messages to an AI agent
+    that manages their tasks via MCP (Model Context Protocol) tools.
+
+    **Security**: JWT Bearer token required in Authorization header.
+
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Local development server
+  - url: https://api.example.com/api/v1
+    description: Production server (placeholder)
+
+paths:
+  /chat:
+    post:
+      summary: Send chat message
+      description: |
+        Processes a user's natural language message, executes AI agent with MCP tools,
+        and returns the assistant's response. Conversation history is automatically
+        loaded from the database and new messages are persisted.
+
+        **Flow**:
+        1. Validate JWT token and extract user_id
+        2. Get or create conversation for user
+        3. Load last N messages from database
+        4. Append user message to conversation
+        5. Run OpenAI agent with MCP tools
+        6. Persist user and assistant messages
+        7. Return assistant response to frontend
+
+        **MCP Tools Available to Agent**:
+        - add_task(user_id, title, description?)
+        - list_tasks(user_id)
+        - update_task(user_id, task_id, title?, description?)
+        - delete_task(user_id, task_id)
+        - complete_task(user_id, task_id)
+
+      operationId: sendChatMessage
+      tags:
+        - Chat
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+            examples:
+              createTask:
+                summary: Create a new task
+                value:
+                  message: "Add buy groceries to my tasks"
+              listTasks:
+                summary: List all tasks
+                value:
+                  message: "What are my tasks?"
+              completeTask:
+                summary: Mark task complete
+                value:
+                  message: "Mark buy groceries as done"
+      responses:
+        '200':
+          description: Successful chat response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+              examples:
+                taskCreated:
+                  summary: Task created successfully
+                  value:
+                    message: "I've added \"buy groceries\" to your tasks. Your task has been created successfully."
+                    conversation_id: "550e8400-e29b-41d4-a716-446655440000"
+                    timestamp: "2025-12-26T12:00:00Z"
+                tasksList:
+                  summary: Tasks listed
+                  value:
+                    message: "You have 3 tasks:\n1. Buy groceries (incomplete)\n2. Call mom (incomplete)\n3. Finish report (complete)"
+                    conversation_id: "550e8400-e29b-41d4-a716-446655440000"
+                    timestamp: "2025-12-26T12:01:00Z"
+        '401':
+          description: Unauthorized - Invalid or missing JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                detail: "Invalid authentication credentials"
+        '403':
+          description: Forbidden - User not authorized for this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                detail: "User not authorized to access this conversation"
+        '422':
+          description: Validation error - Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                detail:
+                  - loc: ["body", "message"]
+                    msg: "field required"
+                    type: "value_error.missing"
+        '500':
+          description: Internal server error - Agent failure or database error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                detail: "An error occurred while processing your request"
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        JWT token obtained from authentication endpoint (Phase 2).
+        Token contains user_id claim used for authorization.
+
+  schemas:
+    ChatRequest:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          minLength: 1
+          maxLength: 2000
+          description: |
+            Natural language message from the user.
+            Examples: "Add buy milk to my tasks", "What are my todos?", "Mark task 1 as complete"
+          example: "Add buy groceries to my tasks"
+        conversation_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: |
+            Optional conversation ID to continue an existing conversation.
+            If not provided, the most recent conversation for the user is used,
+            or a new conversation is created.
+          example: "550e8400-e29b-41d4-a716-446655440000"
+
+    ChatResponse:
+      type: object
+      required:
+        - message
+        - conversation_id
+        - timestamp
+      properties:
+        message:
+          type: string
+          description: |
+            Natural language response from the AI assistant.
+            Contains the result of the agent's action (success confirmation, task list, error message, etc.)
+          example: "I've added \"buy groceries\" to your tasks."
+        conversation_id:
+          type: string
+          format: uuid
+          description: |
+            ID of the conversation this message belongs to.
+            Frontend can use this for displaying conversation history.
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp when the assistant message was created
+          example: "2025-12-26T12:00:00Z"
+
+    Error:
+      type: object
+      required:
+        - detail
+      properties:
+        detail:
+          type: string
+          description: Human-readable error message
+          example: "Invalid authentication credentials"
+
+    ValidationError:
+      type: object
+      required:
+        - detail
+      properties:
+        detail:
+          type: array
+          items:
+            type: object
+            properties:
+              loc:
+                type: array
+                items:
+                  oneOf:
+                    - type: string
+                    - type: integer
+                description: Location of the error in the request
+              msg:
+                type: string
+                description: Error message
+              type:
+                type: string
+                description: Error type
+          example:
+            - loc: ["body", "message"]
+              msg: "field required"
+              type: "value_error.missing"

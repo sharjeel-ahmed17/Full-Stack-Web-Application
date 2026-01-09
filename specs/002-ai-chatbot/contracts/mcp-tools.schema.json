@@ -1,0 +1,362 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MCP Tools Schema for AI Chatbot",
+  "description": "Defines the MCP (Model Context Protocol) tools available to the OpenAI agent for task management. All tools require user_id parameter for authorization and data isolation.",
+  "version": "1.0.0",
+  "tools": [
+    {
+      "name": "add_task",
+      "description": "Creates a new todo task for the authenticated user. Use this when the user asks to add, create, or remind them about something.",
+      "inputSchema": {
+        "type": "object",
+        "required": ["user_id", "title"],
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the authenticated user (extracted from JWT). This ensures tasks are created for the correct user."
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "Title of the task. Extract the main action or item from the user's message. Example: 'Buy groceries', 'Call mom', 'Finish report'."
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 1000,
+            "nullable": true,
+            "description": "Optional detailed description of the task. Use this for additional context provided by the user."
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": ["task_id", "title", "created_at"],
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the newly created task"
+          },
+          "title": {
+            "type": "string",
+            "description": "Title of the created task"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Description of the created task (if provided)"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the task was created"
+          }
+        }
+      },
+      "errors": [
+        {
+          "code": "VALIDATION_ERROR",
+          "description": "Title is empty or exceeds 200 characters"
+        },
+        {
+          "code": "DATABASE_ERROR",
+          "description": "Failed to create task in database"
+        }
+      ]
+    },
+    {
+      "name": "list_tasks",
+      "description": "Retrieves all tasks for the authenticated user. Use this when the user asks to see, show, list, or view their tasks or todos.",
+      "inputSchema": {
+        "type": "object",
+        "required": ["user_id"],
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the authenticated user (extracted from JWT)"
+          },
+          "filter_completed": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "Optional filter: true = only completed tasks, false = only incomplete tasks, null/undefined = all tasks. Default is null."
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": ["tasks", "total_count"],
+        "properties": {
+          "tasks": {
+            "type": "array",
+            "description": "Array of task objects",
+            "items": {
+              "type": "object",
+              "required": ["task_id", "title", "is_completed", "created_at"],
+              "properties": {
+                "task_id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "UUID of the task"
+                },
+                "title": {
+                  "type": "string",
+                  "description": "Title of the task"
+                },
+                "description": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "Description of the task (if exists)"
+                },
+                "is_completed": {
+                  "type": "boolean",
+                  "description": "Completion status of the task"
+                },
+                "created_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Timestamp when task was created"
+                },
+                "updated_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Timestamp when task was last updated"
+                }
+              }
+            }
+          },
+          "total_count": {
+            "type": "integer",
+            "description": "Total number of tasks returned"
+          }
+        }
+      },
+      "errors": [
+        {
+          "code": "DATABASE_ERROR",
+          "description": "Failed to retrieve tasks from database"
+        }
+      ]
+    },
+    {
+      "name": "update_task",
+      "description": "Updates the title or description of an existing task. Use this when the user asks to change, edit, update, or modify a task.",
+      "inputSchema": {
+        "type": "object",
+        "required": ["user_id", "task_id"],
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the authenticated user (extracted from JWT)"
+          },
+          "task_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the task to update. If the user refers to a task by title, first call list_tasks to find the task_id."
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "nullable": true,
+            "description": "New title for the task (optional). Only provide if the user wants to change the title."
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 1000,
+            "nullable": true,
+            "description": "New description for the task (optional). Only provide if the user wants to change the description."
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": ["task_id", "title", "updated_at"],
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the updated task"
+          },
+          "title": {
+            "type": "string",
+            "description": "Updated title of the task"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Updated description of the task"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the task was last updated"
+          }
+        }
+      },
+      "errors": [
+        {
+          "code": "TASK_NOT_FOUND",
+          "description": "Task with the given task_id does not exist or does not belong to the user"
+        },
+        {
+          "code": "VALIDATION_ERROR",
+          "description": "Title is empty or exceeds 200 characters"
+        },
+        {
+          "code": "DATABASE_ERROR",
+          "description": "Failed to update task in database"
+        }
+      ]
+    },
+    {
+      "name": "delete_task",
+      "description": "Permanently deletes a task. Use this when the user asks to delete, remove, or get rid of a task.",
+      "inputSchema": {
+        "type": "object",
+        "required": ["user_id", "task_id"],
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the authenticated user (extracted from JWT)"
+          },
+          "task_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the task to delete. If the user refers to a task by title, first call list_tasks to find the task_id."
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": ["success", "message"],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "True if deletion was successful"
+          },
+          "message": {
+            "type": "string",
+            "description": "Confirmation message",
+            "example": "Task 'Buy groceries' has been deleted successfully."
+          }
+        }
+      },
+      "errors": [
+        {
+          "code": "TASK_NOT_FOUND",
+          "description": "Task with the given task_id does not exist or does not belong to the user"
+        },
+        {
+          "code": "DATABASE_ERROR",
+          "description": "Failed to delete task from database"
+        }
+      ]
+    },
+    {
+      "name": "complete_task",
+      "description": "Marks a task as completed. Use this when the user says they finished, completed, or are done with a task.",
+      "inputSchema": {
+        "type": "object",
+        "required": ["user_id", "task_id"],
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the authenticated user (extracted from JWT)"
+          },
+          "task_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the task to mark as complete. If the user refers to a task by title, first call list_tasks to find the task_id."
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": ["task_id", "title", "is_completed", "updated_at"],
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the completed task"
+          },
+          "title": {
+            "type": "string",
+            "description": "Title of the completed task"
+          },
+          "is_completed": {
+            "type": "boolean",
+            "description": "Completion status (should be true after this operation)"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the task was marked complete"
+          }
+        }
+      },
+      "errors": [
+        {
+          "code": "TASK_NOT_FOUND",
+          "description": "Task with the given task_id does not exist or does not belong to the user"
+        },
+        {
+          "code": "ALREADY_COMPLETED",
+          "description": "Task is already marked as completed"
+        },
+        {
+          "code": "DATABASE_ERROR",
+          "description": "Failed to update task status in database"
+        }
+      ]
+    }
+  ],
+  "securityRequirements": {
+    "userIdIsolation": {
+      "description": "All tools MUST enforce user_id filtering. The user_id parameter is extracted from the JWT token and passed to each tool. Tools MUST NOT access or modify tasks belonging to other users.",
+      "enforcement": "service_layer"
+    },
+    "inputValidation": {
+      "description": "All tool inputs MUST be validated according to their schema. Invalid inputs should return a VALIDATION_ERROR.",
+      "enforcement": "mcp_tool_layer"
+    },
+    "errorHandling": {
+      "description": "Tools MUST NOT expose internal errors (stack traces, database errors) to the agent. Return generic error messages and log details server-side.",
+      "enforcement": "mcp_tool_layer"
+    }
+  },
+  "usage_guidelines": {
+    "agent_instructions": [
+      "Always extract user_id from the JWT context before calling any tool.",
+      "When a user refers to a task by title (e.g., 'complete buy groceries'), first call list_tasks to find the task_id.",
+      "If multiple tasks match a user's description, ask for clarification before acting.",
+      "Provide conversational, helpful responses after tool execution (e.g., 'I've added buy groceries to your tasks!' instead of just returning JSON).",
+      "If a tool call fails, explain the error to the user in natural language without technical jargon."
+    ],
+    "tool_calling_examples": [
+      {
+        "user_message": "Add buy milk to my tasks",
+        "tool_call": "add_task(user_id='uuid-here', title='Buy milk', description=None)",
+        "agent_response": "I've added 'Buy milk' to your tasks. It's now in your todo list!"
+      },
+      {
+        "user_message": "What are my incomplete tasks?",
+        "tool_call": "list_tasks(user_id='uuid-here', filter_completed=false)",
+        "agent_response": "You have 3 incomplete tasks: 1. Buy milk, 2. Call mom, 3. Finish report."
+      },
+      {
+        "user_message": "Mark buy milk as done",
+        "tool_call_sequence": [
+          "list_tasks(user_id='uuid-here', filter_completed=null)",
+          "complete_task(user_id='uuid-here', task_id='task-uuid-here')"
+        ],
+        "agent_response": "Great! I've marked 'Buy milk' as completed. Nice work!"
+      }
+    ]
+  }
+}
