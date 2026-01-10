@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(mkdir -p frontend backend)"
+      "Bash(mkdir -p frontend backend)",
+      "Bash(npm run build)"
     ]
   }
 }
