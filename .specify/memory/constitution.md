@@ -41,6 +41,8 @@ This Constitution establishes the governing principles, standards, and invariant
 
 **Phase II Context**: This version extends Phase I (In-Memory Python Console App) into a full-stack web application with persistent storage, user authentication, and API-driven architecture. Phase I domain model and principles remain unchanged; Phase II adds web-specific technology governance and security requirements.
 
+**Phase III Context**: This version extends Phase II into an AI-native application with MCP tools, OpenAI Agents SDK integration, and ChatKit UI. AI agents manage todos through MCP tools with conversation persistence and stateless orchestration. Phase II functionality remains unchanged; Phase III adds AI/ML-specific technology governance, AI agent workflow patterns, and MCP server requirements.
+
 ## Core Principles
 
 ### I. Spec-Driven Development (SDD)
@@ -146,6 +148,49 @@ AI (Claude Code) is bound by specification intent, not mechanical rule-following
 - Secure cookie attributes (HttpOnly, Secure, SameSite)
 - CORS properly configured for frontend domain
 
+## Phase III Technology Stack Extensions
+
+### AI & Machine Learning (OpenAI Agents SDK)
+
+**Runtime Requirements**:
+- OpenAI Agents SDK (openai-agents v0.6.4+)
+- Python 3.13+ runtime compatibility
+- Async/await patterns for AI interactions
+
+**Agent Configuration**:
+- Agent instructions defined in structured format
+- Function tools for MCP integration
+- Session management and conversation history
+- Rate limiting and API quota management
+
+### MCP (Model Context Protocol) Server
+
+**Server Implementation**:
+- Official MCP SDK (mcp v1.25.0+) for tool definition
+- FastAPI backend integration for MCP endpoints
+- State management through Neon PostgreSQL
+- Transport mechanisms: stdio, SSE, HTTP
+
+**Tool Standards**:
+- CRUD operations for task management
+- Input validation using Pydantic v2 schemas
+- Error handling and structured responses
+- Authentication and authorization integration
+
+### Frontend AI Integration (ChatKit React)
+
+**Component Library**:
+- @openai/chatkit-react for chat UI components
+- Real-time message streaming capabilities
+- Loading and error state management
+- User typing indicators and status updates
+
+**AI Integration**:
+- Real-time connection to AI agents
+- Message history and conversation context
+- Task status visualization during processing
+- Responsive design for various devices
+
 ## Phase II Security Requirements
 
 ### User Data Isolation (CRITICAL)
@@ -184,6 +229,109 @@ def get_todos() -> list[Todo]:
 - Use SQLModel parameterized queries exclusively
 - NEVER construct SQL strings with user input
 - NEVER use raw SQL without parameterization
+
+## Phase III Security Requirements
+
+### AI Agent Access Control (CRITICAL)
+
+**Tool Permission Enforcement**:
+- AI agents MAY ONLY access tools explicitly granted permission
+- MCP tools MUST validate user context for all operations
+- No direct database access from AI agents; use MCP tools only
+- Tool usage logged for audit and compliance
+
+**Implementation Pattern**:
+```python
+# CORRECT: AI agent uses MCP tool with user context
+async def process_todo_request(user_id: UUID, action: str, params: dict):
+    # Tool validates user context internally
+    return await mcp_todo_tool.execute(user_id=user_id, action=action, params=params)
+
+# WRONG: AI agent attempts direct database access
+async def process_todo_request_direct(user_id: UUID, action: str, params: dict):
+    # SECURITY VIOLATION - bypasses access controls
+    return await direct_database_operation(action, params)
+```
+
+### AI Conversation Privacy
+
+**Message Confidentiality**:
+- Conversation messages MUST NOT leak to other users
+- AI agents MUST respect user data isolation
+- Conversation history filtered by user_id
+- Sensitive data sanitization in AI interactions
+
+**Data Handling Requirements**:
+- Encrypt sensitive conversation data at rest
+- Mask personal information in logs
+- Implement data retention policies for conversations
+- Secure deletion of user data upon account removal
+
+### MCP Tool Security
+
+**Tool Authentication**:
+- All MCP tools MUST authenticate user context
+- JWT validation required for all tool invocations
+- Rate limiting applied to prevent abuse
+- Input validation and sanitization mandatory
+
+## Phase III AI-Native Architecture
+
+### MCP Server & Tools (Model Context Protocol)
+
+**Stateless Tool Design**:
+- MCP tools MUST be stateless and persist all data in Neon PostgreSQL
+- Tools follow CRUD pattern: add/list/complete/update/delete tasks
+- Tools accept user context and return structured responses
+- No in-memory state; all operations persisted immediately
+
+**Tool Interface Requirements**:
+- Official MCP SDK (mcp v1.25.0+) for implementation
+- Standardized error handling and response formats
+- Type-safe input/output schemas using Pydantic v2
+- Async operations where applicable for performance
+
+### AI Agent Integration
+
+**Stateless Orchestration**:
+- OpenAI Agents SDK (openai-agents v0.6.4+) manages conversations
+- AI agents use only MCP tools for task management
+- No direct database access; all operations through MCP tools
+- Conversation state managed by the AI platform
+
+**Agent Configuration**:
+- NLP processing for natural language task commands
+- Tool selection based on user intent recognition
+- Error handling and user feedback loops
+- Session persistence across interactions
+
+### Conversation State & Persistence
+
+**Data Management**:
+- Conversations and messages stored in Neon PostgreSQL
+- User data isolation applied to conversation history
+- Conversation context maintained for continuity
+- Message threading with proper user attribution
+
+**Persistence Requirements**:
+- FastAPI endpoint handles chat requests and responses
+- Real-time task status updates via ChatKit UI
+- Conversation state decoupled from UI session
+- Audit trail for all AI interactions and tool calls
+
+### Frontend ChatKit UI
+
+**Chat Interface**:
+- @openai/chatkit-react provides the chat UI components
+- Real-time task status display during AI processing
+- Loading and error states properly handled
+- User-friendly responses with confirmations
+
+**Integration Patterns**:
+- API integration with authentication headers
+- WebSocket connections for real-time updates
+- User session management with JWT tokens
+- Responsive design for various screen sizes
 
 ## API-First Principles
 
@@ -287,6 +435,40 @@ All code changes:
 
 **Coverage Target**: Minimum 80% code coverage across all test types
 
+### Phase III Test Types
+
+**AI Agent Integration Tests**:
+- Verify AI agents correctly use MCP tools
+- Test NLP command interpretation accuracy
+- Validate tool selection and execution
+- Confirm conversation state management
+
+**MCP Tool Tests (Critical)**:
+- Test CRUD operations through MCP tools
+- Verify user context enforcement
+- Validate error handling and responses
+- Confirm database persistence via tools
+
+**Conversation State Tests**:
+- Test message persistence and retrieval
+- Verify conversation history integrity
+- Validate user session isolation
+- Confirm real-time updates functionality
+
+**AI Security Tests**:
+- Verify AI agents cannot bypass user isolation
+- Test tool permission enforcement
+- Validate input sanitization
+- Confirm sensitive data protection
+
+**Chat UI Tests**:
+- Test real-time task status updates
+- Verify loading and error states
+- Validate user-friendly responses
+- Confirm responsive design across devices
+
+**Coverage Target**: Minimum 80% code coverage across all Phase III test types as well
+
 ### Performance & Constraints
 
 Performance requirements, latency targets, throughput targets, and resource constraints MUST be explicit in specification. These are non-functional requirements, not assumptions. If a requirement is not explicit, it is not a requirement.
@@ -321,6 +503,15 @@ Phase II adds the following fields:
 - `updated_at`: Timestamp of last modification (auto-updated)
 
 **Migration Note**: Phase II extends Phase I by adding user context and timestamps. All Phase I fields and behaviors remain unchanged to ensure evolutionary consistency.
+
+### Phase III Extensions (Additive)
+
+Phase III adds the following entities and fields:
+- `conversations` entity: Tracks AI chat sessions with `id`, `user_id`, `created_at`, `updated_at`
+- `messages` entity: Stores conversation messages with `id`, `conversation_id`, `role`, `content`, `timestamp`
+- `ai_interactions` entity: Logs AI tool usage with `id`, `conversation_id`, `tool_name`, `input`, `output`, `timestamp`
+
+**Migration Note**: Phase III extends Phase II by adding AI conversation and interaction tracking. All Phase I and II fields and behaviors remain unchanged to ensure evolutionary consistency.
 
 ## Architectural Decision Records (ADRs)
 
@@ -425,4 +616,4 @@ Claude Code (AI agent) operates under this Constitution with the following respo
 
 ---
 
-**Version**: 2.0.0 | **Ratified**: 2025-12-14 | **Last Amended**: 2025-12-14
+**Version**: 3.0.0 | **Ratified**: 2025-12-14 | **Last Amended**: 2026-02-06
