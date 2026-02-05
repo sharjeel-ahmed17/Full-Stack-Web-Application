@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Sun, Moon } from 'lucide-react';
+import { Sun, Moon, CheckCircle, Zap, Shield, Users } from 'lucide-react';
 
 const HomePage = () => {
   const [darkMode, setDarkMode] = useState(false);
