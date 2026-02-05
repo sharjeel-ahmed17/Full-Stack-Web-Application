@@ -42,9 +42,11 @@ export default function DashboardLayout({
     try {
       await apiClient.logout();
 
-      // Remove token from localStorage
+      // Remove token from localStorage and cookie
       if (typeof window !== 'undefined') {
         localStorage.removeItem('access_token');
+        // Remove cookie by setting expiration to past date
+        document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;';
       }
 
       // Redirect to login page
@@ -55,6 +57,8 @@ export default function DashboardLayout({
       // Even if API call fails, still remove local token and redirect
       if (typeof window !== 'undefined') {
         localStorage.removeItem('access_token');
+        // Remove cookie by setting expiration to past date
+        document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;';
       }
       router.push('/login');
       router.refresh();

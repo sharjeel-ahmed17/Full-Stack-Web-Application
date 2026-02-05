@@ -27,7 +27,20 @@ const TaskList = () => {
       const response = await apiClient.getTasks();
       setTasks(response.tasks);
     } catch (err: any) {
-      setError(err.message || 'Failed to load tasks');
+      // Check if it's an authentication error
+      if (err.message && (err.message.includes('Authentication failed') || err.message.includes('Not authenticated') || err.message.includes('401') || err.message.includes('403'))) {
+        setError('You need to log in first. Redirecting to login...');
+        // Redirect to login after a short delay
+        setTimeout(() => {
+          if (typeof window !== 'undefined') {
+            // Preserve the current location for redirect after login
+            const currentUrl = window.location.href;
+            window.location.href = `/login?redirect=${encodeURIComponent(currentUrl)}`;
+          }
+        }, 2000);
+      } else {
+        setError(err.message || 'Failed to load tasks');
+      }
     } finally {
       setLoading(false);
     }

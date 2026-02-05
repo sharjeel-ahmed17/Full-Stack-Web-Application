@@ -24,12 +24,24 @@ const LoginForm = () => {
       const userData: UserLoginRequest = { email, password };
       const response = await apiClient.login(userData);
 
-      // Store the token in localStorage
+      // Store the token in both localStorage and cookie for middleware access
       localStorage.setItem('access_token', response.access_token);
 
-      // Redirect to dashboard after successful login
-      router.push('/tasks');
-      router.refresh();
+      // Set cookie for server-side access by middleware
+      document.cookie = `access_token=${response.access_token}; path=/; SameSite=Lax;`;
+
+      // Check for redirect URL in query params
+      const urlParams = new URLSearchParams(window.location.search);
+      const redirectUrl = urlParams.get('redirect');
+
+      // Redirect to dashboard or original destination after successful login
+      if (redirectUrl) {
+        // Decode the URL and redirect
+        window.location.href = decodeURIComponent(redirectUrl);
+      } else {
+        router.push('/tasks');
+        router.refresh();
+      }
     } catch (err: any) {
       setError(err.message || 'Login failed');
     } finally {
