@@ -1,0 +1,399 @@
+openapi: 3.0.3
+info:
+  title: MCP Task Management Tools
+  description: Model Context Protocol tools for task management operations
+  version: 1.0.0
+  contact:
+    name: Task Management Team
+
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+
+paths:
+  /mcp/tools/add_task:
+    post:
+      summary: Add a new task
+      description: Creates a new task for the specified user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddTaskRequest'
+      responses:
+        '200':
+          description: Task created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddTaskResponse'
+        '400':
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /mcp/tools/list_tasks:
+    post:
+      summary: List tasks for a user
+      description: Retrieves a list of tasks for the specified user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ListTasksRequest'
+      responses:
+        '200':
+          description: List of tasks retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListTasksResponse'
+        '400':
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /mcp/tools/complete_task:
+    post:
+      summary: Complete a task
+      description: Marks the specified task as completed
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteTaskRequest'
+      responses:
+        '200':
+          description: Task completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompleteTaskResponse'
+        '400':
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /mcp/tools/update_task:
+    post:
+      summary: Update task details
+      description: Updates the title and/or description of the specified task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTaskRequest'
+      responses:
+        '200':
+          description: Task updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateTaskResponse'
+        '400':
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /mcp/tools/delete_task:
+    post:
+      summary: Delete a task
+      description: Removes the specified task from the system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteTaskRequest'
+      responses:
+        '200':
+          description: Task deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteTaskResponse'
+        '400':
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    AddTaskRequest:
+      type: object
+      required:
+        - user_id
+        - title
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          description: The UUID of the user creating the task
+        title:
+          type: string
+          maxLength: 200
+          description: The title of the task
+        description:
+          type: string
+          maxLength: 1000
+          description: Optional description of the task
+      example:
+        user_id: "123e4567-e89b-12d3-a456-426614174000"
+        title: "Sample Task"
+        description: "This is a sample task"
+
+    AddTaskResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [success, error]
+          description: Status of the operation
+        task_id:
+          type: string
+          format: uuid
+          description: The UUID of the created task
+        message:
+          type: string
+          description: Human-readable message about the operation
+      example:
+        status: success
+        task_id: "123e4567-e89b-12d3-a456-426614174001"
+        message: "Task 'Sample Task' created successfully"
+
+    ListTasksRequest:
+      type: object
+      required:
+        - user_id
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          description: The UUID of the user whose tasks to list
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 10
+          description: Maximum number of tasks to return
+        offset:
+          type: integer
+          minimum: 0
+          default: 0
+          description: Number of tasks to skip (for pagination)
+      example:
+        user_id: "123e4567-e89b-12d3-a456-426614174000"
+        limit: 10
+        offset: 0
+
+    ListTasksResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [success, error]
+          description: Status of the operation
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Task'
+          description: List of tasks belonging to the user
+        total_count:
+          type: integer
+          description: Total number of tasks for the user
+      example:
+        status: success
+        tasks:
+          - id: "123e4567-e89b-12d3-a456-426614174001"
+            title: "Sample Task"
+            description: "This is a sample task"
+            is_completed: false
+            created_at: "2023-01-01T00:00:00Z"
+            updated_at: "2023-01-01T00:00:00Z"
+        total_count: 1
+
+    CompleteTaskRequest:
+      type: object
+      required:
+        - user_id
+        - task_id
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          description: The UUID of the user who owns the task
+        task_id:
+          type: string
+          format: uuid
+          description: The UUID of the task to complete
+      example:
+        user_id: "123e4567-e89b-12d3-a456-426614174000"
+        task_id: "123e4567-e89b-12d3-a456-426614174001"
+
+    CompleteTaskResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [success, error]
+          description: Status of the operation
+        message:
+          type: string
+          description: Human-readable message about the operation
+      example:
+        status: success
+        message: "Task 'Sample Task' marked as completed"
+
+    UpdateTaskRequest:
+      type: object
+      required:
+        - user_id
+        - task_id
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          description: The UUID of the user who owns the task
+        task_id:
+          type: string
+          format: uuid
+          description: The UUID of the task to update
+        title:
+          type: string
+          maxLength: 200
+          description: New title for the task (optional)
+        description:
+          type: string
+          maxLength: 1000
+          description: New description for the task (optional)
+      example:
+        user_id: "123e4567-e89b-12d3-a456-426614174000"
+        task_id: "123e4567-e89b-12d3-a456-426614174001"
+        title: "Updated Task Title"
+
+    UpdateTaskResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [success, error]
+          description: Status of the operation
+        message:
+          type: string
+          description: Human-readable message about the operation
+      example:
+        status: success
+        message: "Task 'Updated Task Title' updated successfully"
+
+    DeleteTaskRequest:
+      type: object
+      required:
+        - user_id
+        - task_id
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          description: The UUID of the user who owns the task
+        task_id:
+          type: string
+          format: uuid
+          description: The UUID of the task to delete
+      example:
+        user_id: "123e4567-e89b-12d3-a456-426614174000"
+        task_id: "123e4567-e89b-12d3-a456-426614174001"
+
+    DeleteTaskResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [success, error]
+          description: Status of the operation
+        message:
+          type: string
+          description: Human-readable message about the operation
+      example:
+        status: success
+        message: "Task deleted successfully"
+
+    Task:
+      type: object
+      required:
+        - id
+        - title
+        - is_completed
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The UUID of the task
+        title:
+          type: string
+          description: The title of the task
+        description:
+          type: string
+          description: The description of the task
+        is_completed:
+          type: boolean
+          description: Whether the task is completed
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the task was created
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp when the task was last updated
+
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [error]
+          description: Status indicating an error occurred
+        error_code:
+          type: string
+          description: Code representing the error type
+        message:
+          type: string
+          description: Human-readable description of the error
+      example:
+        status: error
+        error_code: INVALID_INPUT
+        message: "Invalid user_id format"
