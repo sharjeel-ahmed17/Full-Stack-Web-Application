@@ -87,3 +87,13 @@ def get_current_user_profile(
         email=current_user.email,
         created_at=current_user.created_at
     )
+
+
+@auth_router.post("/logout")
+def logout():
+    """
+    Logout endpoint that invalidates the current session.
+    Currently just returns a success message since we're using JWT tokens.
+    In a real implementation, you might want to blacklist the token.
+    """
+    return {"message": "Successfully logged out"}

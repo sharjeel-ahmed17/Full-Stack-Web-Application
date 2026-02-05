@@ -1,11 +1,14 @@
 'use client';
 
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { Task } from '@/types';
 import { apiClient } from '@/lib/api';
 import TaskItem from '@/components/tasks/task-item';
 import EmptyState from '@/components/tasks/empty-state';
 import TaskForm from '@/components/tasks/task-form';
+import { Plus, RotateCcw } from 'lucide-react';
 
 const TaskList = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -49,17 +52,26 @@ const TaskList = () => {
   };
 
   if (loading) {
-    return <div className="text-center py-8">Loading tasks...</div>;
+    return (
+      <div className="text-center py-12">
+        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400"></div>
+        <p className="mt-4 text-gray-600 dark:text-gray-300">Loading your tasks...</p>
+      </div>
+    );
   }
 
   if (error) {
     return (
-      <div className="p-4 text-red-700 bg-red-100 rounded-md">
-        Error: {error}
+      <div className="p-6 text-red-700 bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-200 dark:border-red-800">
+        <div className="flex items-center">
+          <span className="font-medium">Error:</span>
+          <span className="ml-2">{error}</span>
+        </div>
         <button
           onClick={fetchTasks}
-          className="ml-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          className="mt-4 inline-flex items-center px-4 py-2 bg-red-100 dark:bg-red-800/30 text-red-700 dark:text-red-300 rounded-lg hover:bg-red-200 dark:hover:bg-red-800/50 transition-colors duration-200"
         >
+          <RotateCcw className="w-4 h-4 mr-2" />
           Retry
         </button>
       </div>
@@ -67,7 +79,7 @@ const TaskList = () => {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {showCreateForm ? (
         <TaskForm
           onSubmit={handleCreateTask}
@@ -77,8 +89,9 @@ const TaskList = () => {
         <div className="flex justify-end">
           <button
             onClick={() => setShowCreateForm(true)}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 transition-colors duration-200 shadow-md hover:shadow-lg"
           >
+            <Plus className="w-4 h-4 mr-2" />
             Create New Task
           </button>
         </div>
@@ -95,7 +108,7 @@ const TaskList = () => {
       {tasks.length === 0 ? (
         <EmptyState onCreateTask={() => setShowCreateForm(true)} />
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {tasks.map(task => (
             <TaskItem
               key={task.id}

@@ -1,4 +1,4 @@
-import { Task, User, UserRegisterRequest, UserLoginRequest, TaskCreateRequest, TaskUpdateRequest } from '../types';
+import { Task, User, UserRegisterRequest, UserLoginRequest, TaskCreateRequest, TaskUpdateRequest, LogoutResponse } from '../types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
@@ -11,6 +11,7 @@ class ApiClient {
         'Content-Type': 'application/json',
         ...options.headers,
       },
+      credentials: 'include', // Include credentials (cookies, etc.) for CORS requests
       ...options,
     };
 
@@ -86,6 +87,13 @@ class ApiClient {
   async toggleTaskCompletion(taskId: string): Promise<{ id: string; is_completed: boolean; updated_at: string }> {
     return this.request(`/tasks/${taskId}/complete`, {
       method: 'PATCH',
+    });
+  }
+
+  // Logout endpoint
+  async logout(): Promise<LogoutResponse> {
+    return this.request<LogoutResponse>('/auth/logout', {
+      method: 'POST',
     });
   }
 }

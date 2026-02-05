@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-02-04T21:48:44.696Z",
+  "backend": {
+    "status": "✅ HEALTHY",
+    "health": {
+      "status": "ok",
+      "service": "todo-backend"
+    },
+    "apiDocs": "200",
+    "authEndpoints": "{\"detail\":\"Email already registered\"}",
+    "taskEndpoints": ""
+  },
+  "frontend": {
+    "status": "✅ RUNNING",
+    "running": "200"
+  },
+  "apiConnection": {
+    "status": null,
+    "baseUrl": "http://localhost:8000/api/v1"
+  }
+}

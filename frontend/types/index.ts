@@ -55,3 +55,7 @@ export interface ApiResponse<T> {
   error?: string;
   message?: string;
 }
+
+export interface LogoutResponse {
+  message: string;
+}

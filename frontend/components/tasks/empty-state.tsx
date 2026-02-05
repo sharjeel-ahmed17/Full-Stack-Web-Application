@@ -1,5 +1,8 @@
+'use client';
+
 import React from 'react';
-import { Button } from '@/components/ui/button';
+import { motion } from 'framer-motion';
+import { ClipboardList, Plus } from 'lucide-react';
 
 interface EmptyStateProps {
   onCreateTask?: () => void;
@@ -7,34 +10,54 @@ interface EmptyStateProps {
 
 const EmptyState: React.FC<EmptyStateProps> = ({ onCreateTask }) => {
   return (
-    <div className="text-center py-12">
-      <div className="mx-auto h-24 w-24 text-gray-400">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-          />
-        </svg>
-      </div>
-      <h3 className="mt-2 text-lg font-medium text-gray-900">No tasks</h3>
-      <p className="mt-1 text-sm text-gray-500">
-        Get started by creating a new task.
-      </p>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="text-center py-16"
+    >
+      <motion.div
+        className="mx-auto w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mb-6"
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+      >
+        <ClipboardList className="w-12 h-12 text-blue-600" />
+      </motion.div>
+
+      <motion.h3
+        className="text-2xl font-bold text-gray-900 mb-2"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3 }}
+      >
+        No tasks yet
+      </motion.h3>
+
+      <motion.p
+        className="text-gray-600 max-w-md mx-auto mb-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.4 }}
+      >
+        Get started by creating your first task. Organize your work and boost your productivity today.
+      </motion.p>
+
       {onCreateTask && (
-        <div className="mt-6">
-          <Button onClick={onCreateTask}>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+        >
+          <button
+            onClick={onCreateTask}
+            className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 shadow-md hover:shadow-lg"
+          >
+            <Plus className="w-5 h-5 mr-2" />
             Create your first task
-          </Button>
-        </div>
+          </button>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 };
 
