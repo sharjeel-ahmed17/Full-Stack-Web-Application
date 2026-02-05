@@ -18,10 +18,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Initialize the MCP server
-mcp = FastMCP(
-    name="task-management-mcp",
-    version="1.0.0"
-)
+mcp = FastMCP("task-management-mcp")
 
 # Import tool functions
 from .tools.task_operations import (
