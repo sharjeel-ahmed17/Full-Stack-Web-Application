@@ -8,7 +8,6 @@ task management tools for integration with Claude Desktop.
 import asyncio
 import logging
 from mcp.server.fastmcp import FastMCP
-from mcp.server.exceptions import McpError
 
 # Set up logging to stderr to avoid interfering with MCP protocol
 logging.basicConfig(
