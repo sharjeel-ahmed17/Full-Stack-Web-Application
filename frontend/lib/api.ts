@@ -142,12 +142,15 @@ class ApiClient {
       body: formData,
     });
 
+    // Type assertion to ensure TypeScript knows the response structure
+    const typedResponse = response as { access_token: string; token_type: string };
+
     // Store the token in both localStorage and cookie
-    if (typeof window !== 'undefined' && response.access_token) {
-      setToken(response.access_token);
+    if (typeof window !== 'undefined' && typedResponse.access_token) {
+      setToken(typedResponse.access_token);
     }
 
-    return response;
+    return typedResponse;
   }
 
   async getCurrentUser(): Promise<User> {
