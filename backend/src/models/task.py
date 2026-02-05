@@ -23,6 +23,14 @@ class TaskBase(SQLModel):
 
 
 class Task(TaskBase, table=True):
+    """
+    Task model extended for AI agent integration.
+
+    Validation rules:
+    - Title must not be empty
+    - User_id must reference existing user
+    - Task cannot be completed before creation
+    """
     __tablename__ = "tasks"
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
