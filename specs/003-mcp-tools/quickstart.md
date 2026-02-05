@@ -43,6 +43,12 @@ alembic upgrade head
 python -m src.mcp.server
 ```
 
+Or use the startup script:
+```bash
+# From backend directory
+python start_mcp_server.py
+```
+
 ### 2. Using the Tools
 Once started, the MCP server exposes these tools:
 - `add_task`: Create new tasks
@@ -81,7 +87,15 @@ To add a new MCP tool:
 ### Testing Tools
 Run the MCP server tests:
 ```bash
-pytest tests/mcp/test_tools.py
+# Run all MCP tests
+pytest tests/mcp/
+
+# Run specific tool tests
+pytest tests/mcp/test_add_task.py
+pytest tests/mcp/test_list_tasks.py
+pytest tests/mcp/test_complete_task.py
+pytest tests/mcp/test_update_task.py
+pytest tests/mcp/test_delete_task.py
 ```
 
 ## Troubleshooting
@@ -94,3 +108,9 @@ pytest tests/mcp/test_tools.py
 
 ### Logging
 Logs are written to stderr for debugging without interfering with MCP protocol.
+
+## Architecture
+- **Statelessness**: Each tool call operates independently with no shared state
+- **Database Integration**: Uses the same SQLModel services as the main backend
+- **Security**: Enforces user isolation via user_id validation
+- **Error Handling**: Comprehensive validation and error reporting
