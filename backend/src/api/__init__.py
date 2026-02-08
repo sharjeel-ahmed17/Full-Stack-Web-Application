@@ -1,5 +1,8 @@
 """
-API Endpoints for AI Agent Integration
+API Endpoints for Chat Endpoint Feature
 
-Contains API endpoints for interacting with the AI agent system.
+Contains API endpoints for chat functionality and conversation management.
 """
+from .v1.conversations import router as conversations_router
+
+__all__ = ["conversations_router"]

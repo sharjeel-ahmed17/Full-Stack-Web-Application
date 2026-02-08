@@ -1,41 +1,52 @@
-from typing import Optional, List
-from uuid import UUID
-from sqlmodel import Session, select
-from ..models.message import Message, MessageCreate
+from typing import List
+from sqlalchemy.orm import Session
+from ..models.message import Message
+from ..models.conversation import Conversation
+import uuid
 
 
-class MessageService:
-    """Service for managing messages in AI agent conversations."""
+def save_message(
+    db: Session,
+    conversation_id: uuid.UUID,
+    role: str,
+    content: str,
+    message_metadata: dict = None
+) -> Message:
+    """
+    Save a message to a conversation
+    """
+    message = Message(
+        conversation_id=conversation_id,
+        role=role,
+        content=content,
+        message_metadata=message_metadata
+    )
+    db.add(message)
+    db.commit()
+    db.refresh(message)
+    return message
 
-    def create_message(self, session: Session, conversation_id: UUID, role: str, content: str, metadata: Optional[dict] = None) -> Message:
-        """Create a new message in a conversation."""
-        message = Message(
-            conversation_id=conversation_id,
-            role=role,
-            content=content,
-            metadata=metadata
-        )
-        session.add(message)
-        session.commit()
-        session.refresh(message)
-        return message
 
-    def get_message(self, session: Session, message_id: UUID) -> Optional[Message]:
-        """Retrieve a message by ID."""
-        statement = select(Message).where(Message.id == message_id)
-        return session.exec(statement).first()
+def get_messages(db: Session, conversation_id: uuid.UUID) -> List[Message]:
+    """
+    Get all messages for a conversation
+    """
+    return db.query(Message).filter(
+        Message.conversation_id == conversation_id
+    ).order_by(Message.timestamp.asc()).all()
 
-    def get_messages_by_conversation(self, session: Session, conversation_id: UUID) -> List[Message]:
-        """Retrieve all messages in a conversation."""
-        statement = select(Message).where(Message.conversation_id == conversation_id).order_by(Message.timestamp)
-        return session.exec(statement).all()
 
-    def update_message_content(self, session: Session, message_id: UUID, content: str) -> Optional[Message]:
-        """Update message content."""
-        message = self.get_message(session, message_id)
-        if message:
-            message.content = content
-            session.add(message)
-            session.commit()
-            session.refresh(message)
-        return message
+def get_conversation_history(db: Session, conversation_id: uuid.UUID) -> List[Message]:
+    """
+    Get the full history of messages in a conversation
+    """
+    return get_messages(db, conversation_id)
+
+
+def get_latest_messages(db: Session, conversation_id: uuid.UUID, limit: int = 10) -> List[Message]:
+    """
+    Get the latest messages from a conversation
+    """
+    return db.query(Message).filter(
+        Message.conversation_id == conversation_id
+    ).order_by(Message.timestamp.desc()).limit(limit).all()

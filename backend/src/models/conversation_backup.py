@@ -19,3 +19,14 @@ class Conversation(SQLModel, table=True):
 
     # Relationship to messages
     messages: list["Message"] = Relationship(back_populates="conversation")
+
+
+# Update the __init__.py file to include the model
+"""
+Models package for the chat endpoint feature.
+
+Contains data models for conversations, messages, and AI interactions.
+"""
+from .conversation import Conversation
+
+__all__ = ["Conversation"]

@@ -1,45 +1,43 @@
-from typing import Optional, List
-from uuid import UUID
-from sqlmodel import Session, select
-from ..models.conversation import Conversation, ConversationCreate
-from ..models.message import Message
+from typing import Optional
+from sqlalchemy.orm import Session
+from ..models.conversation import Conversation
+import uuid
 
 
-class ConversationService:
-    """Service for managing conversations with AI agents."""
+def create_conversation(db: Session, user_id: uuid.UUID, title: Optional[str] = None) -> Conversation:
+    """
+    Create a new conversation for a user
+    """
+    conversation = Conversation(
+        user_id=user_id,
+        title=title
+    )
+    db.add(conversation)
+    db.commit()
+    db.refresh(conversation)
+    return conversation
 
-    def create_conversation(self, session: Session, user_id: UUID, title: Optional[str] = None) -> Conversation:
-        """Create a new conversation."""
-        conversation = Conversation(
-            user_id=user_id,
-            title=title
-        )
-        session.add(conversation)
-        session.commit()
-        session.refresh(conversation)
-        return conversation
 
-    def get_conversation(self, session: Session, conversation_id: UUID) -> Optional[Conversation]:
-        """Retrieve a conversation by ID."""
-        statement = select(Conversation).where(Conversation.id == conversation_id)
-        return session.exec(statement).first()
+def get_conversation(db: Session, conversation_id: uuid.UUID) -> Optional[Conversation]:
+    """
+    Get a specific conversation by ID
+    """
+    return db.get(Conversation, conversation_id)
 
-    def get_user_conversations(self, session: Session, user_id: UUID) -> List[Conversation]:
-        """Retrieve all conversations for a user."""
-        statement = select(Conversation).where(Conversation.user_id == user_id)
-        return session.exec(statement).all()
 
-    def update_conversation_title(self, session: Session, conversation_id: UUID, title: str) -> Optional[Conversation]:
-        """Update conversation title."""
-        conversation = self.get_conversation(session, conversation_id)
-        if conversation:
-            conversation.title = title
-            session.add(conversation)
-            session.commit()
-            session.refresh(conversation)
-        return conversation
+def get_user_conversation(db: Session, user_id: uuid.UUID) -> Optional[Conversation]:
+    """
+    Get the active conversation for a user (most recent)
+    """
+    return db.query(Conversation).filter(
+        Conversation.user_id == user_id
+    ).order_by(Conversation.created_at.desc()).first()
 
-    def get_conversation_messages(self, session: Session, conversation_id: UUID) -> List[Message]:
-        """Retrieve all messages in a conversation."""
-        statement = select(Message).where(Message.conversation_id == conversation_id)
-        return session.exec(statement).all()
+
+def get_user_conversations(db: Session, user_id: uuid.UUID) -> list[Conversation]:
+    """
+    Get all conversations for a user
+    """
+    return db.query(Conversation).filter(
+        Conversation.user_id == user_id
+    ).all()

@@ -1,5 +1,20 @@
 """
-Core utilities for AI Agent Integration
+Core utilities for Chat Endpoint Feature
 
-Contains configuration and security utilities for the AI agent system.
+Contains error handling, configuration, and security utilities for the chat system.
 """
+from .errors import (
+    ChatError,
+    InvalidInputError,
+    UnauthorizedAccessError,
+    ResourceNotFoundError,
+    ServiceUnavailableError
+)
+
+__all__ = [
+    "ChatError",
+    "InvalidInputError",
+    "UnauthorizedAccessError",
+    "ResourceNotFoundError",
+    "ServiceUnavailableError"
+]
