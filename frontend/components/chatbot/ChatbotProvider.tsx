@@ -6,7 +6,7 @@ import Chatbot from '@/components/chatbot/Chatbot';
 
 interface ChatbotContextType {
   showChatbot: boolean;
-  setShowChatbot: React.Dispatch<React.SetAction<boolean>>;
+  setShowChatbot: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const ChatbotContext = createContext<ChatbotContextType | undefined>(undefined);

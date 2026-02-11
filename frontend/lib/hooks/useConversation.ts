@@ -113,10 +113,11 @@ export const useConversation = (apiBaseUrl: string) => {
       }));
 
       // Add AI response to state
+      const role = response.response.role === 'user' ? 'user' : 'assistant';
       const aiMessage: Message = {
         id: response.conversation_id,
         content: response.response.content,
-        role: response.response.role,
+        role: role,
         timestamp: new Date(response.timestamp),
         status: 'received',
         toolCalls: response.tool_calls
