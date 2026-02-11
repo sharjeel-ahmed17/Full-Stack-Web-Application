@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+
+# Production builds
+.next/
+dist/
+out/
+
+# Environment variables
+.env.local
+.env.production
+.env.test
+.env*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Coverage
+coverage/
+coverage-final.json
+
+# Build outputs
+build/
+.nyc_output/
+
+# Next.js
+.svelte-kit/
+.c8/
+.vercel/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+
+# Testing
+.jest/
+jest.coverage/
+test-report.xml
