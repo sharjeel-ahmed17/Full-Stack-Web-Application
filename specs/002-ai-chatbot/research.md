@@ -91,7 +91,7 @@ Resolve all NEEDS CLARIFICATION items from the Technical Context section of plan
 
 **Findings**:
 
-- **Package Name**: `@openai/chatkit-react` (OpenAI ChatKit - 2025)
+- **Package Name**: Custom chat UI components using React and Tailwind CSS
 - **Alternative**: `@chatscope/chat-ui-kit-react` (Open source, general-purpose, version 2.1.1)
 - **Documentation**: [openai.github.io/chatkit-js/](https://openai.github.io/chatkit-js/)
 - **Python SDK**: ChatKit Python SDK available for backend integration
@@ -117,7 +117,7 @@ Resolve all NEEDS CLARIFICATION items from the Technical Context section of plan
 - No OpenAI-specific features
 - More control, less opinionated
 
-**Decision**: Use `@openai/chatkit-react` for Phase 3. It aligns with the OpenAI Agents SDK choice, provides production-grade chat UI, and supports custom backend integration (required for our FastAPI `/api/v1/chat` endpoint).
+**Decision**: Use custom chat UI components for Phase 3. It aligns with the OpenAI Agents SDK choice, provides production-grade chat UI, and supports custom backend integration (required for our FastAPI `/api/v1/chat` endpoint).
 
 **Sources**:
 - [OpenAI ChatKit.js Documentation](https://openai.github.io/chatkit-js/)
@@ -165,7 +165,7 @@ Result returned to Agent → formatted response → persisted to DB → returned
 ### Frontend Architecture
 
 **Selected Stack**:
-- **Chat UI**: `@openai/chatkit-react` with custom backend integration
+- **Chat UI**: Custom chat components with React and Tailwind CSS, with custom backend integration
 - **API Client**: Custom type-safe client calling `POST /api/v1/chat`
 - **Authentication**: JWT token attached automatically (existing Better Auth setup)
 
@@ -229,7 +229,7 @@ POST /api/v1/chat (FastAPI backend)
 All NEEDS CLARIFICATION items from Technical Context are now resolved:
 - ✅ OpenAI Agents SDK official package: `openai-agents`
 - ✅ Official MCP SDK implementation pattern: `mcp` with FastMCP, integrated via `agents.mcp`
-- ✅ ChatKit React package name and setup: `@openai/chatkit-react`
+- ✅ Custom chat UI implementation with React and Tailwind CSS
 
 ---
 

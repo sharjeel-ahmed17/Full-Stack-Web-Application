@@ -85,7 +85,7 @@ A secure, AI-powered chatbot that manages user todos via natural language using 
 2. **research.md**: Resolved all NEEDS CLARIFICATION items:
    - OpenAI Agents SDK: `openai-agents` (v0.6.4+, Python 3.13+ compatible)
    - Official MCP SDK: `mcp` (v1.25.0+, native integration via `agents.mcp`)
-   - ChatKit React: `@openai/chatkit-react` (Next.js 16+ compatible)
+   - Chat UI: Custom React components with Tailwind CSS (Next.js 16+ compatible)
 3. **data-model.md**: Defined Conversation and Message SQLModel models with security requirements
 4. **contracts/**: OpenAPI spec for POST /api/v1/chat and MCP tools JSON schema
 5. **quickstart.md**: Developer setup guide with troubleshooting and testing workflows
@@ -99,7 +99,7 @@ A secure, AI-powered chatbot that manages user todos via natural language using 
 **Architecture Decisions**:
 - Backend: `openai-agents` + `mcp` with FastMCP for tool registration
 - Integration: Native MCP support via `from agents.mcp import MCPServerStdio`
-- Frontend: `@openai/chatkit-react` with custom backend integration
+- Frontend: Custom chat UI components with React and Tailwind CSS, with custom backend integration
 - Security: JWT validation + user_id filtering + MCP tool isolation
 
 **Next Steps**:

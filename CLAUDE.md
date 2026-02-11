@@ -212,8 +212,8 @@ See `.specify/memory/constitution.md` for code quality, testing, performance, se
 ## Active Technologies
 - Python 3.13+ (backend), TypeScript 5.x (frontend) + FastAPI, SQLModel, Pydantic v2, Alembic (backend); Next.js 16+, Better Auth, Tailwind CSS (frontend) (001-task-crud-auth)
 - PostgreSQL 16 (Neon Serverless in production, Docker container in development) (001-task-crud-auth)
-- OpenAI Agents SDK (openai-agents v0.6.4+), Official MCP SDK (mcp v1.25.0+), ChatKit React (@openai/chatkit-react) (002-ai-chatbot)
+- OpenAI Agents SDK (openai-agents v0.6.4+), Official MCP SDK (mcp v1.25.0+) (002-ai-chatbot)
 
 ## Recent Changes
-- 002-ai-chatbot: Added OpenAI Agents SDK (openai-agents), Official MCP SDK (mcp), ChatKit React (@openai/chatkit-react)
+- 002-ai-chatbot: Added OpenAI Agents SDK (openai-agents), Official MCP SDK (mcp)
 - 001-task-crud-auth: Added Python 3.13+ (backend), TypeScript 5.x (frontend) + FastAPI, SQLModel, Pydantic v2, Alembic (backend); Next.js 16+, Better Auth, Tailwind CSS (frontend)

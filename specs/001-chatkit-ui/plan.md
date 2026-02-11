@@ -12,7 +12,7 @@ Implementation of a responsive conversational UI using OpenAI ChatKit integrated
 ## Technical Context
 
 **Language/Version**: TypeScript 5.x, React 18+ with Server Components (Next.js App Router)
-**Primary Dependencies**: Next.js 14+, @openai/chatkit-react, Tailwind CSS
+**Primary Dependencies**: Next.js 14+, Tailwind CSS
 **Storage**: Browser local storage for UI session persistence (conversation display only)
 **Testing**: Jest for unit tests, Playwright for E2E tests, React Testing Library for component tests
 **Target Platform**: Web browsers (mobile and desktop) with responsive design
@@ -62,7 +62,7 @@ frontend/
 │       └── chat.ts     # Chat API client functions
 ├── types/
 │   └── chat.ts         # Chat-related TypeScript types
-└── package.json        # Add @openai/chatkit-react dependency
+└── package.json        # Add chat UI dependencies
 ```
 
 **Structure Decision**: Web application with dedicated chat page and reusable components. The frontend structure extends the existing Next.js app with a new chat route and supporting components. The UI will integrate with the existing backend through the established authentication system and the chat endpoint at POST /api/v1/{user_id}/chat.

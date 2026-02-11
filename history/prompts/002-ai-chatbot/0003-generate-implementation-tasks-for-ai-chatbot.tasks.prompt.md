@@ -63,7 +63,7 @@ A secure backend-driven AI chatbot that manages todos via natural language using
 
 Successfully generated tasks.md with 55 tasks organized by user story:
 
-**Phase 1: Setup (3 tasks)** - Install dependencies (openai-agents, mcp, @openai/chatkit-react) and configure OPENAI_API_KEY
+**Phase 1: Setup (3 tasks)** - Install dependencies (openai-agents, mcp) and configure OPENAI_API_KEY
 
 **Phase 2: Foundational (9 tasks)** - Database models (Conversation, Message), Alembic migration, MCP infrastructure setup, AI agent configuration, chat schemas
 

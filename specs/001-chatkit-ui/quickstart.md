@@ -11,7 +11,7 @@
 ### 1. Install ChatKit Dependency
 ```bash
 cd frontend
-npm install @openai/chatkit-react
+npm install
 ```
 
 ### 2. Verify Backend Connection

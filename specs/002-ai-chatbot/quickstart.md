@@ -130,14 +130,11 @@ Navigate to the frontend directory and install ChatKit:
 ```bash
 cd frontend
 
-# Install OpenAI ChatKit React
-npm install @openai/chatkit-react
-
-# Or with pnpm
-pnpm add @openai/chatkit-react
+# Install chat UI dependencies
+npm install
 
 # Verify installation
-npm list @openai/chatkit-react
+npm list
 ```
 
 ### 2. Verify Frontend Structure
@@ -305,7 +302,7 @@ print(openai.Model.list())
 ### Issue: Chat UI doesn't render
 
 **Possible Causes**:
-1. **@openai/chatkit-react not installed**: Run `npm install @openai/chatkit-react`
+1. **Dependencies not installed**: Run `npm install` in frontend/
 2. **TypeScript errors**: Check `npm run build` for errors
 3. **Missing chat route**: Verify `frontend/app/chat/page.tsx` exists
 

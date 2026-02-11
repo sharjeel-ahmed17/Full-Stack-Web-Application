@@ -5,7 +5,7 @@ Implementation of a responsive conversational UI using OpenAI ChatKit integrated
 
 **Feature**: Frontend ChatKit UI
 **Branch**: `001-chatkit-ui`
-**Target**: Next.js 14+ with App Router, TypeScript 5.x, @openai/chatkit-react, Tailwind CSS
+**Target**: Next.js 14+ with App Router, TypeScript 5.x, Tailwind CSS
 
 ## Dependencies
 - Backend chat endpoint: POST `/api/v1/{user_id}/chat`
@@ -23,7 +23,7 @@ Implementation of a responsive conversational UI using OpenAI ChatKit integrated
 ## Phase 1: Setup and Project Initialization
 
 - [X] T001 Create chat directory structure in frontend app
-- [X] T002 Install @openai/chatkit-react dependency in frontend package.json
+- [X] T002 Install chat UI dependencies in frontend package.json
 - [X] T003 Create chat types definition file at frontend/types/chat.ts
 - [X] T004 Initialize API client module at frontend/lib/api/chat.ts
 - [X] T005 Create chat components directory at frontend/components/chat/

@@ -30,7 +30,7 @@ Create a Prompt History Record for the constitution update to Phase III Todo AI 
 Created a Prompt History Record for a potential constitution update to Phase III Todo AI Chatbot specifications. The actual Phase III constitution would likely include:
 - Integration of OpenAI Agents SDK (openai-agents v0.6.4+)
 - Official MCP SDK (mcp v1.25.0+)
-- ChatKit React (@openai/chatkit-react) for AI chatbot functionality
+- Custom chat UI components for AI chatbot functionality
 - Updates to the technology stack to support AI chatbot features
 - Enhanced security considerations for AI interactions
 - Updated repository structure to accommodate AI chatbot components

@@ -21,7 +21,7 @@
 **Purpose**: Project initialization and dependency installation for Phase 3
 
 - [ ] T001 Install backend dependencies: uv add openai-agents mcp in backend/
-- [ ] T002 [P] Install frontend dependency: npm install @openai/chatkit-react in frontend/
+- [ ] T002 [P] Install frontend chat UI dependencies in frontend/
 - [ ] T003 [P] Add OPENAI_API_KEY to backend/.env configuration file
 
 ---
@@ -166,7 +166,7 @@
 
 ### Frontend Components
 
-- [ ] T038 [P] Create ChatInterface component in frontend/components/chat/ChatInterface.tsx integrating @openai/chatkit-react with custom backend
+- [ ] T038 [P] Create ChatInterface component in frontend/components/chat/ChatInterface.tsx with custom chat UI
 - [ ] T039 [P] Create MessageList component in frontend/components/chat/MessageList.tsx for displaying conversation history
 - [ ] T040 Update API client in frontend/lib/api.ts to add chatApi.sendMessage method with JWT attachment
 - [ ] T041 Create chat page route in frontend/app/chat/page.tsx using ChatInterface component

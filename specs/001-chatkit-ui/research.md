@@ -33,7 +33,7 @@
 - **Existing Patterns**: Server Components by default, Client Components when needed
 
 ## ChatKit Integration Approach
-- **Library**: @openai/chatkit-react for chat UI components
+- **Library**: Custom chat UI components using React and Tailwind CSS
 - **Integration**: Need to customize adapter to connect with our backend endpoint
 - **Authentication**: Must pass JWT token to chat requests
 - **Message Flow**: User input → API call → Backend processing → Response display
